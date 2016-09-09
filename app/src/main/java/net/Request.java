@@ -25,7 +25,7 @@ public abstract class Request<T> implements Comparable<Request<T>> {
     //
     private int serialNumber;
     //
-    private boolean isCache;
+    private Boolean isCache;
 
     public Request(HttpMethod method, String url, RequestListener<T> requestListener) {
         mHttpMethod = method;
@@ -100,7 +100,11 @@ public abstract class Request<T> implements Comparable<Request<T>> {
     }
 
     public boolean isUseCache() {
-        return isCache;
+        return isCache == null ? false : isCache;
+    }
+
+    public void setUseCache(boolean b) {
+        isCache = b;
     }
 
     public final void deliveryResponse(Response response) {

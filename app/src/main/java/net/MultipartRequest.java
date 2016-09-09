@@ -8,7 +8,7 @@ import java.io.IOException;
  */
 public class MultipartRequest extends Request<String> {
 
-    private MultipartEntity mMultipartEntity = new MultipartEntity();
+    private MultipartBody mMultipartEntity = new MultipartBody();
 
     public MultipartRequest(HttpMethod method, String url, RequestListener<String> requestListener) {
         super(method, url, requestListener);
@@ -20,7 +20,7 @@ public class MultipartRequest extends Request<String> {
     }
 
 
-    public MultipartEntity getMultipartEntity() {
+    public MultipartBody getMultipartEntity() {
         return mMultipartEntity;
     }
 

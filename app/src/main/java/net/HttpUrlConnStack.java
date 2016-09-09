@@ -18,7 +18,7 @@ public class HttpUrlConnStack implements HttpStack {
     public Response performRequest(Request<?> request) {
         HttpURLConnection urlConnection = null;
         try {
-            urlConnection = getHttpURLConnection(request.getUrl());
+            urlConnection = getHttpURLConnection(request);
             setRequestHeader(urlConnection, request);
             setRequestParams(urlConnection, request);
             return fetchResponse(urlConnection);
@@ -50,12 +50,12 @@ public class HttpUrlConnStack implements HttpStack {
         }
     }
 
-    private HttpURLConnection getHttpURLConnection(String url) throws IOException {
+    private HttpURLConnection getHttpURLConnection(Request<?> request) throws IOException {
         HttpURLConnection urlConnection;
-        urlConnection = (HttpURLConnection) new URL(url).openConnection();
+        urlConnection = (HttpURLConnection) new URL(request.getUrl()).openConnection();
         urlConnection.setConnectTimeout(Config.TIME_OUT);
         urlConnection.setDoInput(true);
-        urlConnection.setDefaultUseCaches(false);
+        urlConnection.setUseCaches(request.isUseCache());
         return urlConnection;
     }
 

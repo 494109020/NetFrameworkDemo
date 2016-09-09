@@ -14,7 +14,7 @@ import java.util.Random;
 /**
  * Created by Magina on 16/9/8.
  */
-public class MultipartEntity {
+public class MultipartBody {
 
     //上传文件时候请求头中的Content-Type的类型
     private final String TYPE_MULTIPART = "multipart/form-data";
@@ -43,7 +43,7 @@ public class MultipartEntity {
     //输出流，用于缓存参数数据
     ByteArrayOutputStream mOutputStream = new ByteArrayOutputStream();
 
-    public MultipartEntity() {
+    public MultipartBody() {
         this.mBoundary = generateBoundary();
     }
 
@@ -59,7 +59,7 @@ public class MultipartEntity {
 
     //参数开头的分隔符
     private void writeFirstBoundary() throws IOException {
-        mOutputStream.write(("--" + mBoundary + "\r\n").getBytes());
+        mOutputStream.write(("--" + mBoundary + NEW_LINE_STR).getBytes());
     }
 
     //
@@ -76,38 +76,34 @@ public class MultipartEntity {
     public void addFilePart(String key, File file) {
         InputStream is = null;
         try {
-            is = new FileInputStream(file);
             writeFirstBoundary();
-            final String type = CONTENT_TYPE + TYPE_OCTET_STREAM + NEW_LINE_STR;
             mOutputStream.write(getContentDispositionBytes(key, file.getName()));
+            final String type = CONTENT_TYPE + TYPE_OCTET_STREAM + NEW_LINE_STR;
             mOutputStream.write(type.getBytes());
             mOutputStream.write(BINARY_ENCODING);
 
+            is = new FileInputStream(file);
             final byte[] tmp = new byte[4096];
             int len = 0;
             while ((len = is.read(tmp)) != -1) {
                 mOutputStream.write(tmp, 0, len);
             }
             mOutputStream.flush();
+            //这里是不是应该有个换行呢？？？
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            IOUtil.close(is);
         }
     }
 
     private void writeToOutputStream(String paramName, byte[] rawData, String type, byte[] encoding, String fileName) {
         try {
             writeFirstBoundary();
-            mOutputStream.write((CONTENT_TYPE + type + NEW_LINE_STR).getBytes());
             mOutputStream.write(getContentDispositionBytes(paramName, fileName));
+            mOutputStream.write((CONTENT_TYPE + type + NEW_LINE_STR).getBytes());
             mOutputStream.write(encoding);
+            mOutputStream.write(rawData);
             mOutputStream.write(NEW_LINE_STR.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
